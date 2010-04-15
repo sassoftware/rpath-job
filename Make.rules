@@ -17,16 +17,20 @@ PYVERSION = $(shell $(PYTHON) -c 'import os, sys; print sys.version[:3]')
 PYINCLUDE = $(shell $(PYTHON) -c 'import os, sys; print os.sep.join((sys.prefix, "include", "python" + sys.version[:3]))')
 
 pyfiles-install:
-	mkdir -p $(DESTDIR)$(pydir)
+	mkdir -p $(DESTDIR)$(sitedir)
 	for f in $(python_files); do \
-		mkdir -p `dirname $(DESTDIR)/$(sitedir)/$(DIR)/$$f`; \
-		cp -a $$f $(DESTDIR)/$(sitedir)/$(DIR)/$$f; \
+		mkdir -p `dirname $(DESTDIR)$(sitedir)$(DIR)/$$f`; \
+		cp -a $$f $(DESTDIR)$(sitedir)$(DIR)/$$f; \
 	done
+
+pyfiles-compile:
+	$(PYTHON) -c "import compileall; compileall.compile_dir('$(DESTDIR)$(sitedir)$(DIR)', ddir='$(sitedir)$(DIR)', quiet=1)"
+	$(PYTHON) -OO -c "import compileall; compileall.compile_dir('$(DESTDIR)$(sitedir)$(DIR)', ddir='$(sitedir)$(DIR)', quiet=1)"
 
 default-dist: dist-subdirs
 	for f in $(dist_files); do \
-		mkdir -p $(DISTDIR)/$(DIR)/`dirname $$f`; \
-		cp -a $$f $(DISTDIR)/$(DIR)/$$f; \
+		mkdir -p $(DISTDIR)$(DIR)/`dirname $$f`; \
+		cp -a $$f $(DISTDIR)$(DIR)/$$f; \
 	done
 
 default-install:

@@ -1,5 +1,5 @@
-
-# Copyright (c) 2010 rPath, Inc.
+#
+# Copyright (c) 2011111111110 rPath, Inc.
 #
 # This program is distributed under the terms of the Common Public License,
 # version 1.0. A copy of this license should have been distributed with this
@@ -12,26 +12,24 @@
 # full details.
 #
 
-module = job
-SUBDIRS = models
+dist_files = Makefile $(SCHEMA_FILES)
+SCHEMA_FILES = $(wildcard *.xsd)
 
-python_files =	__init__.py \
-		api1.py
+all: default-all
 
-dist_files = Makefile $(module)_constants.py.in $(python_files)
+install: default-install $(DESTDIR)$(datadir)/catalog-service
+	install $(SCHEMA_FILES) $(DESTDIR)$(datadir)/catalog-service
 
-all: default-all $(module)_constants.py default-subdirs
+$(DESTDIR)$(datadir)/catalog-service:
+	install -d -m755 $@
 
-$(module)_constants.py: $(module)_constants.py.in ../Makefile ../Make.defs Makefile
-	sed -e s,@version@,$(VERSION),g \
-	$< > $@
-
-install: all pyfiles-install default-install install-subdirs pyfiles-compile
+validate-schema:
+	xmllint -schema http://www.w3.org/2001/XMLSchema.xsd $(SCHEMA_FILES) > /dev/null
 
 dist: default-dist
 
 clean: default-clean
-	rm -f $(module)_constants.py
 
-include ../Make.rules
-include ../Make.defs
+export TOPDIR=$(shell pwd)/..
+include $(TOPDIR)/Make.rules
+include $(TOPDIR)/Make.defs

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+targetNamespace="http://www.rpath.com/permanent/jobs/job-1.0.xsd"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:cny="http://www.rpath.com/permanent/jobs/job-1.0.xsd"
+    xmlns="http://www.rpath.com/permanent/jobs/job-1.0.xsd">
+
+  <xsd:element name="jobs" type="cny:jobsType" />
+  <xsd:element name="job" type="cny:jobType" />
+
+  <xsd:complexType name="jobsType">
+    <xsd:sequence>
+      <xsd:element name="job" type="cny:jobType"
+          minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="timestampType">
+    <xsd:restriction base="xsd:decimal">
+      <xsd:fractionDigits value="3" />
+      <xsd:minInclusive value="0" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="jobType">
+    <xsd:sequence>
+      <xsd:element name="type" type="xsd:token"
+          minOccurs="1" maxOccurs="1" />
+      <xsd:element name="status" minOccurs="1" maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Queued" />
+            <xsd:enumeration value="Running" />
+            <xsd:enumeration value="Failed" />
+            <xsd:enumeration value="Completed" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="created" type="cny:timestampType"
+          minOccurs="1" maxOccurs="1" />
+      <xsd:element name="modified" type="cny:timestampType"
+          minOccurs="1" maxOccurs="1" />
+      <xsd:element name="createdBy" type="xsd:token"
+          minOccurs="1" maxOccurs="1" />
+      <xsd:element name="expiration" type="cny:timestampType"
+          minOccurs="0" maxOccurs="1" />
+      <xsd:element name="cloudName" type="xsd:token"
+          minOccurs="0" maxOccurs="1" />
+      <xsd:element name="cloudType" type="xsd:token"
+          minOccurs="0" maxOccurs="1" />
+      <xsd:element name="instanceId" type="xsd:anyURI"
+          minOccurs="0" maxOccurs="1" />
+      <xsd:element name="imageId" type="xsd:anyURI"
+          minOccurs="0" maxOccurs="1" />
+      <xsd:element name="history" type="cny:historyEntryType"
+          minOccurs="0" maxOccurs="unbounded" />
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="errorResponse" type="cny:errorType"
+            minOccurs="0" maxOccurs="1" />
+        <xsd:choice minOccurs="0" maxOccurs="1">
+          <xsd:element name="result" type="xsd:string"
+              minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="resultResource" type="cny:resultResourceType"
+              minOccurs="0" maxOccurs="unbounded" />
+<!-- Uncomment when we want subjob support
+          <xsd:element name="subjobref" type="cny:jobRefType"
+              minOccurs="0" maxOccurs="unbounded" />
+          <xsd:element name="subjob" type="cny:jobType"
+              minOccurs="0" maxOccurs="unbounded" />
+-->
+        </xsd:choice>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" />
+    <xsd:attribute name="href" type="xsd:anyURI" />
+  </xsd:complexType>
+
+  <xsd:complexType name="historyEntryType">
+    <xsd:sequence>
+      <xsd:element name="timestamp" type="cny:timestampType"
+          minOccurs="1" maxOccurs="1" />
+      <xsd:element name="content" type="xsd:string"
+          minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="resultResourceType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="href" type="xsd:anyURI" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="jobRefType">
+    <xsd:attribute name="href" type="xsd:anyURI" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="errorType">
+    <xsd:sequence>
+      <xsd:element name="fault" type="cny:faultType"
+          minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="faultType">
+    <xsd:sequence>
+      <xsd:element name="code" type="xsd:integer"
+          minOccurs="1" maxOccurs="1" />
+      <xsd:element name="message" type="xsd:string"
+          minOccurs="1" maxOccurs="1" />
+      <xsd:element name="traceback" type="xsd:string"
+          minOccurs="0" maxOccurs="1" />
+      <xsd:element name="productCode" type="cny:productCodeType"
+          minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="productCodeType">
+    <xsd:sequence>
+      <xsd:any minOccurs="0" />
+    </xsd:sequence>
+    <xsd:anyAttribute />
+  </xsd:complexType>
+
+</xsd:schema>

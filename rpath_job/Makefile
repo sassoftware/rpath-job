@@ -16,7 +16,8 @@ module = job
 SUBDIRS = models
 
 python_files =	__init__.py \
-		api1.py
+		api1.py \
+		$(module)_constants.py
 
 dist_files = Makefile $(module)_constants.py.in $(python_files)
 

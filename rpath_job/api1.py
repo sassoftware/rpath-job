@@ -651,13 +651,12 @@ class TargetSqlBacking(SQLBacking):
 class ManagedSystemsSqlBacking(TargetSqlBacking):
     __slots__ = []
 
-    # XXX We will need to join with ManagedSystems too, to eliminate duplicates
-    extra_fields = TargetSqlBacking.extra_fields + """, inventory_systemtarget.targetSystemId AS instanceId"""
-    extra_joins = """ JOIN job_managedSystem
-                    ON (jobs.job_id = job_managedSystem.job_id)
-              JOIN inventory_systemtarget
-                    ON (job_managedSystem.managedSystemId = inventory_systemtarget.managedSystem_id)
-              JOIN Targets ON (inventory_systemtarget.target_id = Targets.targetId)"""
+    extra_fields = TargetSqlBacking.extra_fields + """, inventory_system_target.target_system_id AS instanceId"""
+    extra_joins = """ JOIN job_managed_system
+                    ON (jobs.job_id = job_managed_system.job_id)
+              JOIN inventory_system_target
+                    ON (job_managed_system.managed_system_id = inventory_system_target.managed_system_id)
+              JOIN Targets ON (inventory_system_target.target_id = Targets.targetId)"""
 
     def _postNewCollection(self, jobId, kvdict):
         cloudType = kvdict['cloudType']
@@ -665,12 +664,12 @@ class ManagedSystemsSqlBacking(TargetSqlBacking):
         instanceId = kvdict['instanceId']
         targetId = self.targets[(cloudType, cloudName)]
         cu = self._db.cursor()
-        cu.execute("""SELECT managedSystem_id FROM inventory_systemtarget
-            WHERE target_id = ? AND targetSystemId = ?""", targetId, instanceId)
+        cu.execute("""SELECT managed_system_id FROM inventory_system_target
+            WHERE target_id = ? AND target_system_id = ?""", targetId, instanceId)
         row = cu.fetchone()
         managedSystemId = row[0]
 
-        cu.execute("INSERT INTO job_managedSystem (job_id, managedSystemId) VALUES (?,?)",
+        cu.execute("INSERT INTO job_managed_system (job_id, managed_system_id) VALUES (?,?)",
             jobId, managedSystemId)
 
 class SqlJobStore(JobStore):

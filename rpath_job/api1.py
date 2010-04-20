@@ -484,7 +484,7 @@ class SQLBacking(object):
         return sorted(jobIds)
 
     def _sanitizeKey(self, key):
-        if isinstance(key, int):
+        if isinstance(key, (int, long)):
             return key
         return int(os.path.basename(key))
 

@@ -700,6 +700,9 @@ class BackgroundRunner(object):
     def handleError(self, ei):
         return
 
+    def log_error(self, msg, ei):
+        return
+
     def backgroundRun(self, *args, **kw):
         pid = os.fork()
         if pid:
@@ -722,8 +725,7 @@ class BackgroundRunner(object):
             except Exception:
                 try:
                     ei = sys.exc_info()
-                    self.log_error('Daemonized process exception',
-                                   exc_info = ei)
+                    self.log_error('Daemonized process exception', ei)
                     self.handleError(ei)
                 finally:
                     os._exit(1)

@@ -475,7 +475,7 @@ class SQLBacking(object):
         jobIds = []
         while 1:
             d = cu.fetchone_dict()
-            if d is None:
+            if d is None or d == {}:
                 break
             jobId = d['id']
             d['result'] = self.getResults(jobId)

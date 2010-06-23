@@ -704,11 +704,11 @@ class BackgroundRunner(object):
         return
 
     def backgroundRun(self, *args, **kw):
+        self.preFork()
         pid = os.fork()
         if pid:
             os.waitpid(pid, 0)
             return
-        self.preFork()
         try:
             try:
                 pid = os.fork()

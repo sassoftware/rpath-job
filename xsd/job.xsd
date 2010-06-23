@@ -46,6 +46,8 @@ targetNamespace="http://www.rpath.com/permanent/jobs/job-1.0.xsd"
           minOccurs="1" maxOccurs="1" />
       <xsd:element name="expiration" type="cny:timestampType"
           minOccurs="0" maxOccurs="1" />
+      <xsd:element name="statusMessage" type="xsd:string"
+          minOccurs="0" maxOccurs="1" />
       <xsd:element name="cloudName" type="xsd:token"
           minOccurs="0" maxOccurs="1" />
       <xsd:element name="cloudType" type="xsd:token"

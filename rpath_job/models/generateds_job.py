@@ -286,6 +286,7 @@ class jobType(GeneratedsSuper):
         MemberSpec_('modified', ['timestampType', 'xsd:decimal'], 0),
         MemberSpec_('createdBy', 'xsd:token', 0),
         MemberSpec_('expiration', ['timestampType', 'xsd:decimal'], 0),
+        MemberSpec_('statusMessage', 'xsd:string', 0),
         MemberSpec_('cloudName', 'xsd:token', 0),
         MemberSpec_('cloudType', 'xsd:token', 0),
         MemberSpec_('instanceId', 'xsd:anyURI', 0),
@@ -297,7 +298,7 @@ class jobType(GeneratedsSuper):
         ]
     subclass = None
     superclass = None
-    def __init__(self, href=None, id=None, type_=None, status=None, created=None, modified=None, createdBy=None, expiration=None, cloudName=None, cloudType=None, instanceId=None, imageId=None, history=None, errorResponse=None, result=None, resultResource=None):
+    def __init__(self, href=None, id=None, type_=None, status=None, created=None, modified=None, createdBy=None, expiration=None, statusMessage=None, cloudName=None, cloudType=None, instanceId=None, imageId=None, history=None, errorResponse=None, result=None, resultResource=None):
         self.href = _cast(None, href)
         self.id = _cast(None, id)
         self.type_ = type_
@@ -306,6 +307,7 @@ class jobType(GeneratedsSuper):
         self.modified = modified
         self.createdBy = createdBy
         self.expiration = expiration
+        self.statusMessage = statusMessage
         self.cloudName = cloudName
         self.cloudType = cloudType
         self.instanceId = instanceId
@@ -353,6 +355,8 @@ class jobType(GeneratedsSuper):
     def validate_expiration(self, value):
         # validate type expiration
         pass
+    def get_statusMessage(self): return self.statusMessage
+    def set_statusMessage(self, statusMessage): self.statusMessage = statusMessage
     def get_cloudName(self): return self.cloudName
     def set_cloudName(self, cloudName): self.cloudName = cloudName
     def get_cloudType(self): return self.cloudType
@@ -414,6 +418,9 @@ class jobType(GeneratedsSuper):
         if self.expiration is not None:
             showIndent(outfile, level)
             outfile.write('<%sexpiration>%s</%sexpiration>\n' % (namespace_, self.format_string(quote_xml(self.expiration).encode(ExternalEncoding), input_name='expiration'), namespace_))
+        if self.statusMessage is not None:
+            showIndent(outfile, level)
+            outfile.write('<%sstatusMessage>%s</%sstatusMessage>\n' % (namespace_, self.format_string(quote_xml(self.statusMessage).encode(ExternalEncoding), input_name='statusMessage'), namespace_))
         if self.cloudName is not None:
             showIndent(outfile, level)
             outfile.write('<%scloudName>%s</%scloudName>\n' % (namespace_, self.format_string(quote_xml(self.cloudName).encode(ExternalEncoding), input_name='cloudName'), namespace_))
@@ -443,6 +450,7 @@ class jobType(GeneratedsSuper):
             self.modified is not None or
             self.createdBy is not None or
             self.expiration is not None or
+            self.statusMessage is not None or
             self.cloudName is not None or
             self.cloudType is not None or
             self.instanceId is not None or
@@ -486,6 +494,9 @@ class jobType(GeneratedsSuper):
         if self.expiration is not None:
             showIndent(outfile, level)
             outfile.write('expiration=%s,\n' % quote_python(self.expiration).encode(ExternalEncoding))
+        if self.statusMessage is not None:
+            showIndent(outfile, level)
+            outfile.write('statusMessage=%s,\n' % quote_python(self.statusMessage).encode(ExternalEncoding))
         if self.cloudName is not None:
             showIndent(outfile, level)
             outfile.write('cloudName=%s,\n' % quote_python(self.cloudName).encode(ExternalEncoding))
@@ -591,6 +602,12 @@ class jobType(GeneratedsSuper):
                 expiration_ += text__content_.nodeValue
             self.expiration = expiration_
             self.validate_expiration(self.expiration)    # validate type expiration
+        elif child_.nodeType == Node.ELEMENT_NODE and \
+            nodeName_ == 'statusMessage':
+            statusMessage_ = ''
+            for text__content_ in child_.childNodes:
+                statusMessage_ += text__content_.nodeValue
+            self.statusMessage = statusMessage_
         elif child_.nodeType == Node.ELEMENT_NODE and \
             nodeName_ == 'cloudName':
             cloudName_ = ''

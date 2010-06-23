@@ -559,7 +559,8 @@ class SQLBacking(object):
         if jobId in self._jobsCache:
             return self._jobsCache[jobId]
         cu = self._getJobsCursor(jobId)
-        d = cu.fetchone_dict()
+        # fetchone_dict returns an empty dict if no data is found
+        d = cu.fetchone_dict() or None
         if d is not None:
             d['result'] = self.getResults(jobId)
             d['history'] = self.enumerateHistory(jobId)

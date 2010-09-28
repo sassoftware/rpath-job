@@ -657,7 +657,6 @@ class TargetSqlBacking(SQLBacking):
         for jobId, kvdict in entries.items():
             system_id = kvdict.get('system', None)
             if system_id:
-                import epdb; epdb.serve()  
                 index = kvlist.index(((jobId, 'system'), system_id))
                 kvlist.pop(index)
                 cu = self._db.cursor()

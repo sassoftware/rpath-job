@@ -33,6 +33,7 @@ class Jobs(generateds_job.jobsType, Base):
         return self.job.__iter__()
 
 ResultResource = generateds_job.resultResourceType
+System = generateds_job.systemType
 
 class HistoryEntry(generateds_job.historyEntryType):
     def __init__(self, content, timestamp = None):

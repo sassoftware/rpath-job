@@ -58,6 +58,8 @@ targetNamespace="http://www.rpath.com/permanent/jobs/job-1.0.xsd"
           minOccurs="0" maxOccurs="1" />
       <xsd:element name="history" type="cny:historyEntryType"
           minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="system" type="cny:systemType"
+          minOccurs="0" maxOccurs="1" />
       <xsd:choice minOccurs="0" maxOccurs="1">
         <xsd:element name="errorResponse" type="cny:errorType"
             minOccurs="0" maxOccurs="1" />
@@ -86,6 +88,14 @@ targetNamespace="http://www.rpath.com/permanent/jobs/job-1.0.xsd"
       <xsd:element name="content" type="xsd:string"
           minOccurs="1" maxOccurs="1" />
     </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="systemType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="href" type="xsd:anyURI" />
+      </xsd:extension>
+    </xsd:simpleContent>
   </xsd:complexType>
 
   <xsd:complexType name="resultResourceType">

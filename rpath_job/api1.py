@@ -468,6 +468,7 @@ class SQLBacking(object):
             uvals = [ x[1] for x in updates ]
             uvals.append(jobId)
             cu.execute(sql, *uvals)
+        return entries
 
     def enumerate(self, keyPrefix):
         self._jobsCache.clear()
@@ -620,9 +621,10 @@ class SQLBacking(object):
 class TargetSqlBacking(SQLBacking):
     __slots__ = [ '_targetsCache' ]
 
-    extra_fields = ", Targets.targetType AS cloudType, Targets.targetName AS cloudName"
+    extra_fields = ", Targets.targetType AS cloudType, Targets.targetName AS cloudName, job_system.system_id AS system"
     extra_joins = """JOIN job_target ON (jobs.job_id = job_target.job_id)
-              JOIN Targets ON (job_target.targetId = Targets.targetId)"""
+              JOIN Targets ON (job_target.targetId = Targets.targetId)
+              LEFT OUTER JOIN job_system ON (job_system.job_id = jobs.job_id)"""
     extra_fields_insert = []
 
     def initCaches(self):
@@ -648,6 +650,20 @@ class TargetSqlBacking(SQLBacking):
                 for x in cu)
         return self._targetsCache
 
+    def setFields(self, kvlist):
+        entries = {}
+        for (keyId, field), value in kvlist:
+            entries.setdefault(keyId, {})[field] = value
+        for jobId, kvdict in entries.items():
+            system_id = kvdict.get('system', None)
+            if system_id:
+                import epdb; epdb.serve()  
+                index = kvlist.index(((jobId, 'system'), system_id))
+                kvlist.pop(index)
+                cu = self._db.cursor()
+                cu.execute("INSERT INTO job_system (job_id, system_id)"
+                    "VALUES (?, ?)", jobId, system_id)
+        SQLBacking.setFields(self, kvlist)
 
 class ManagedSystemsSqlBacking(TargetSqlBacking):
     __slots__ = []

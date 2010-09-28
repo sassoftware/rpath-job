@@ -280,25 +280,26 @@ class jobType(GeneratedsSuper):
     member_data_items_ = [
         MemberSpec_('href', 'xsd:anyURI', 0),
         MemberSpec_('id', 'xsd:string', 0),
-        MemberSpec_('type_', 'xsd:token', 0),
+        MemberSpec_('type_', 'xsd:string', 0),
         MemberSpec_('status', ['status', 'xsd:token'], 0),
         MemberSpec_('created', ['timestampType', 'xsd:decimal'], 0),
         MemberSpec_('modified', ['timestampType', 'xsd:decimal'], 0),
-        MemberSpec_('createdBy', 'xsd:token', 0),
+        MemberSpec_('createdBy', 'xsd:string', 0),
         MemberSpec_('expiration', ['timestampType', 'xsd:decimal'], 0),
         MemberSpec_('statusMessage', 'xsd:string', 0),
-        MemberSpec_('cloudName', 'xsd:token', 0),
-        MemberSpec_('cloudType', 'xsd:token', 0),
-        MemberSpec_('instanceId', 'xsd:anyURI', 0),
-        MemberSpec_('imageId', 'xsd:anyURI', 0),
+        MemberSpec_('cloudName', 'xsd:string', 0),
+        MemberSpec_('cloudType', 'xsd:string', 0),
+        MemberSpec_('instanceId', 'xsd:string', 0),
+        MemberSpec_('imageId', 'xsd:string', 0),
         MemberSpec_('history', 'historyEntryType', 1),
+        MemberSpec_('system', 'systemType', 0),
         MemberSpec_('errorResponse', 'errorType', 0),
         MemberSpec_('result', 'xsd:string', 1),
         MemberSpec_('resultResource', 'resultResourceType', 1),
         ]
     subclass = None
     superclass = None
-    def __init__(self, href=None, id=None, type_=None, status=None, created=None, modified=None, createdBy=None, expiration=None, statusMessage=None, cloudName=None, cloudType=None, instanceId=None, imageId=None, history=None, errorResponse=None, result=None, resultResource=None):
+    def __init__(self, href=None, id=None, type_=None, status=None, created=None, modified=None, createdBy=None, expiration=None, statusMessage=None, cloudName=None, cloudType=None, instanceId=None, imageId=None, history=None, system=None, errorResponse=None, result=None, resultResource=None):
         self.href = _cast(None, href)
         self.id = _cast(None, id)
         self.type_ = type_
@@ -316,6 +317,7 @@ class jobType(GeneratedsSuper):
             self.history = []
         else:
             self.history = history
+        self.system = system
         self.errorResponse = errorResponse
         if result is None:
             self.result = []
@@ -369,6 +371,8 @@ class jobType(GeneratedsSuper):
     def set_history(self, history): self.history = history
     def add_history(self, value): self.history.append(value)
     def insert_history(self, index, value): self.history[index] = value
+    def get_system(self): return self.system
+    def set_system(self, system): self.system = system
     def get_errorResponse(self): return self.errorResponse
     def set_errorResponse(self, errorResponse): self.errorResponse = errorResponse
     def get_result(self): return self.result
@@ -435,6 +439,8 @@ class jobType(GeneratedsSuper):
             outfile.write('<%simageId>%s</%simageId>\n' % (namespace_, self.format_string(quote_xml(self.imageId).encode(ExternalEncoding), input_name='imageId'), namespace_))
         for history_ in self.history:
             history_.export(outfile, level, namespace_, name_='history')
+        if self.system:
+            self.system.export(outfile, level, namespace_, name_='system')
         if self.errorResponse:
             self.errorResponse.export(outfile, level, namespace_, name_='errorResponse')
         for result_ in self.result:
@@ -456,6 +462,7 @@ class jobType(GeneratedsSuper):
             self.instanceId is not None or
             self.imageId is not None or
             self.history or
+            self.system is not None or
             self.errorResponse is not None or
             self.result or
             self.resultResource
@@ -521,6 +528,12 @@ class jobType(GeneratedsSuper):
         level -= 1
         showIndent(outfile, level)
         outfile.write('],\n')
+        if self.system is not None:
+            showIndent(outfile, level)
+            outfile.write('system=model_.systemType(\n')
+            self.system.exportLiteral(outfile, level, name_='system')
+            showIndent(outfile, level)
+            outfile.write('),\n')
         if self.errorResponse is not None:
             showIndent(outfile, level)
             outfile.write('errorResponse=model_.errorType(\n')
@@ -565,7 +578,6 @@ class jobType(GeneratedsSuper):
             type_ = ''
             for text__content_ in child_.childNodes:
                 type_ += text__content_.nodeValue
-            type_ = ' '.join(type_.split())
             self.type_ = type_
         elif child_.nodeType == Node.ELEMENT_NODE and \
             nodeName_ == 'status':
@@ -593,7 +605,6 @@ class jobType(GeneratedsSuper):
             createdBy_ = ''
             for text__content_ in child_.childNodes:
                 createdBy_ += text__content_.nodeValue
-            createdBy_ = ' '.join(createdBy_.split())
             self.createdBy = createdBy_
         elif child_.nodeType == Node.ELEMENT_NODE and \
             nodeName_ == 'expiration':
@@ -613,14 +624,12 @@ class jobType(GeneratedsSuper):
             cloudName_ = ''
             for text__content_ in child_.childNodes:
                 cloudName_ += text__content_.nodeValue
-            cloudName_ = ' '.join(cloudName_.split())
             self.cloudName = cloudName_
         elif child_.nodeType == Node.ELEMENT_NODE and \
             nodeName_ == 'cloudType':
             cloudType_ = ''
             for text__content_ in child_.childNodes:
                 cloudType_ += text__content_.nodeValue
-            cloudType_ = ' '.join(cloudType_.split())
             self.cloudType = cloudType_
         elif child_.nodeType == Node.ELEMENT_NODE and \
             nodeName_ == 'instanceId':
@@ -639,6 +648,11 @@ class jobType(GeneratedsSuper):
             obj_ = historyEntryType.factory()
             obj_.build(child_)
             self.history.append(obj_)
+        elif child_.nodeType == Node.ELEMENT_NODE and \
+            nodeName_ == 'system':
+            obj_ = systemType.factory()
+            obj_.build(child_)
+            self.set_system(obj_)
         elif child_.nodeType == Node.ELEMENT_NODE and \
             nodeName_ == 'errorResponse':
             obj_ = errorType.factory()
@@ -816,6 +830,84 @@ class historyEntryType(GeneratedsSuper):
                 content_ += text__content_.nodeValue
             self.content = content_
 # end class historyEntryType
+
+
+class systemType(GeneratedsSuper):
+    member_data_items_ = [
+        MemberSpec_('href', 'xsd:anyURI', 0),
+        MemberSpec_('valueOf_', 'xsd:string', 0),
+        ]
+    subclass = None
+    superclass = None
+    def __init__(self, href=None, valueOf_=''):
+        self.href = _cast(None, href)
+        self.valueOf_ = valueOf_
+    def factory(*args_, **kwargs_):
+        if systemType.subclass:
+            return systemType.subclass(*args_, **kwargs_)
+        else:
+            return systemType(*args_, **kwargs_)
+    factory = staticmethod(factory)
+    def get_href(self): return self.href
+    def set_href(self, href): self.href = href
+    def getValueOf_(self): return self.valueOf_
+    def setValueOf_(self, valueOf_): self.valueOf_ = valueOf_
+    def export(self, outfile, level, namespace_='cny:', name_='systemType', namespacedef_=''):
+        showIndent(outfile, level)
+        outfile.write('<%s%s%s' % (namespace_, name_, namespacedef_ and ' ' + namespacedef_ or '', ))
+        self.exportAttributes(outfile, level, namespace_, name_='systemType')
+        if self.hasContent_():
+            outfile.write('>')
+            self.exportChildren(outfile, level + 1, namespace_, name_)
+            outfile.write('</%s%s>\n' % (namespace_, name_))
+        else:
+            outfile.write('/>\n')
+    def exportAttributes(self, outfile, level, namespace_='cny:', name_='systemType'):
+        if self.href is not None:
+            outfile.write(' href=%s' % (self.format_string(quote_attrib(self.href).encode(ExternalEncoding), input_name='href'), ))
+    def exportChildren(self, outfile, level, namespace_='cny:', name_='systemType'):
+        if self.valueOf_.find('![CDATA') > -1:
+            value=quote_xml('%s' % self.valueOf_)
+            value=value.replace('![CDATA','<![CDATA')
+            value=value.replace(']]',']]>')
+            outfile.write(value.encode(ExternalEncoding))
+        else:
+            outfile.write(quote_xml('%s' % self.valueOf_.encode(ExternalEncoding)))
+    def hasContent_(self):
+        if (
+            self.valueOf_
+            ):
+            return True
+        else:
+            return False
+    def exportLiteral(self, outfile, level, name_='systemType'):
+        level += 1
+        self.exportLiteralAttributes(outfile, level, name_)
+        if self.hasContent_():
+            self.exportLiteralChildren(outfile, level, name_)
+    def exportLiteralAttributes(self, outfile, level, name_):
+        if self.href is not None:
+            showIndent(outfile, level)
+            outfile.write('href = "%s",\n' % (self.href,))
+    def exportLiteralChildren(self, outfile, level, name_):
+        showIndent(outfile, level)
+        outfile.write('valueOf_ = """%s""",\n' % (self.valueOf_,))
+    def build(self, node_):
+        attrs = node_.attributes
+        self.buildAttributes(attrs)
+        self.valueOf_ = ''
+        for child_ in node_.childNodes:
+            nodeName_ = child_.nodeName.split(':')[-1]
+            self.buildChildren(child_, nodeName_)
+    def buildAttributes(self, attrs):
+        if attrs.get('href'):
+            self.href = attrs.get('href').value
+    def buildChildren(self, child_, nodeName_):
+        if child_.nodeType == Node.TEXT_NODE:
+            self.valueOf_ += child_.nodeValue
+        elif child_.nodeType == Node.CDATA_SECTION_NODE:
+            self.valueOf_ += '![CDATA['+child_.nodeValue+']]'
+# end class systemType
 
 
 class resultResourceType(GeneratedsSuper):
@@ -1045,7 +1137,7 @@ class errorType(GeneratedsSuper):
 
 class faultType(GeneratedsSuper):
     member_data_items_ = [
-        MemberSpec_('code', 'xsd:integer', 0),
+        MemberSpec_('code', 'xsd:string', 0),
         MemberSpec_('message', 'xsd:string', 0),
         MemberSpec_('traceback', 'xsd:string', 0),
         MemberSpec_('productCode', 'productCodeType', 0),
@@ -1087,7 +1179,7 @@ class faultType(GeneratedsSuper):
     def exportChildren(self, outfile, level, namespace_='cny:', name_='faultType'):
         if self.code is not None:
             showIndent(outfile, level)
-            outfile.write('<%scode>%s</%scode>\n' % (namespace_, self.format_integer(self.code, input_name='code'), namespace_))
+            outfile.write('<%scode>%s</%scode>\n' % (namespace_, self.format_string(quote_xml(self.code).encode(ExternalEncoding), input_name='code'), namespace_))
         if self.message is not None:
             showIndent(outfile, level)
             outfile.write('<%smessage>%s</%smessage>\n' % (namespace_, self.format_string(quote_xml(self.message).encode(ExternalEncoding), input_name='message'), namespace_))
@@ -1116,7 +1208,7 @@ class faultType(GeneratedsSuper):
     def exportLiteralChildren(self, outfile, level, name_):
         if self.code is not None:
             showIndent(outfile, level)
-            outfile.write('code=%d,\n' % self.code)
+            outfile.write('code=%s,\n' % quote_python(self.code).encode(ExternalEncoding))
         if self.message is not None:
             showIndent(outfile, level)
             outfile.write('message=%s,\n' % quote_python(self.message).encode(ExternalEncoding))
@@ -1140,13 +1232,10 @@ class faultType(GeneratedsSuper):
     def buildChildren(self, child_, nodeName_):
         if child_.nodeType == Node.ELEMENT_NODE and \
             nodeName_ == 'code':
-            if child_.firstChild:
-                sval_ = child_.firstChild.nodeValue
-                try:
-                    ival_ = int(sval_)
-                except ValueError, exp:
-                    raise ValueError('requires integer (code): %s' % exp)
-                self.code = ival_
+            code_ = ''
+            for text__content_ in child_.childNodes:
+                code_ += text__content_.nodeValue
+            self.code = code_
         elif child_.nodeType == Node.ELEMENT_NODE and \
             nodeName_ == 'message':
             message_ = ''

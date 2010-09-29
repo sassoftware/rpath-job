@@ -656,9 +656,10 @@ class TargetSqlBacking(SQLBacking):
             entries.setdefault(keyId, {})[field] = value
         for jobId, kvdict in entries.items():
             system_id = kvdict.get('system', None)
-            if system_id:
+            if kvdict.has_key('system'):
                 index = kvlist.index(((jobId, 'system'), system_id))
                 kvlist.pop(index)
+            if system_id:
                 cu = self._db.cursor()
                 cu.execute("INSERT INTO job_system (job_id, system_id)"
                     "VALUES (?, ?)", jobId, system_id)
@@ -672,7 +673,8 @@ class ManagedSystemsSqlBacking(TargetSqlBacking):
                     ON (jobs.job_id = job_managed_system.job_id)
               JOIN inventory_system_target
                     ON (job_managed_system.managed_system_id = inventory_system_target.managed_system_id)
-              JOIN Targets ON (inventory_system_target.target_id = Targets.targetId)"""
+              JOIN Targets ON (inventory_system_target.target_id = Targets.targetId)
+              LEFT OUTER JOIN job_system ON (job_system.job_id = jobs.job_id)"""
 
     def _postNewCollection(self, jobId, kvdict):
         cloudType = kvdict['cloudType']

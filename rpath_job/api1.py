@@ -621,10 +621,10 @@ class SQLBacking(object):
 class TargetSqlBacking(SQLBacking):
     __slots__ = [ '_targetsCache' ]
 
-    extra_fields = ", Targets.targetType AS cloudType, Targets.targetName AS cloudName, inventory_system_job.system_id AS system"
+    extra_fields = ", Targets.targetType AS cloudType, Targets.targetName AS cloudName, job_system.system_id AS system"
     extra_joins = """JOIN job_target ON (jobs.job_id = job_target.job_id)
               JOIN Targets ON (job_target.targetId = Targets.targetId)
-              LEFT OUTER JOIN inventory_system_job ON (inventory_system_job.job_id = jobs.job_id)"""
+              LEFT OUTER JOIN job_system ON (job_system.job_id = jobs.job_id)"""
     extra_fields_insert = []
 
     def initCaches(self):
@@ -660,12 +660,9 @@ class TargetSqlBacking(SQLBacking):
                 index = kvlist.index(((jobId, 'system'), system_id))
                 kvlist.pop(index)
             if system_id:
-                from mint.lib import uuid
-                eventUuid = str(uuid.uuid4())
                 cu = self._db.cursor()
-                cu.execute("INSERT INTO inventory_system_job "
-                    "(job_id, system_id, event_uuid) "
-                    "VALUES (?, ?)", jobId, system_id, eventUuid)
+                cu.execute("INSERT INTO job_system (job_id, system_id)"
+                    "VALUES (?, ?)", jobId, system_id)
         SQLBacking.setFields(self, kvlist)
 
 class ManagedSystemsSqlBacking(TargetSqlBacking):
@@ -677,8 +674,7 @@ class ManagedSystemsSqlBacking(TargetSqlBacking):
               JOIN inventory_system_target
                     ON (job_managed_system.managed_system_id = inventory_system_target.managed_system_id)
               JOIN Targets ON (inventory_system_target.target_id = Targets.targetId)
-              LEFT OUTER JOIN inventory_system_job 
-                ON (inventory_system_job.job_id = jobs.job_id)"""
+              LEFT OUTER JOIN job_system ON (job_system.job_id = jobs.job_id)"""
 
     def _postNewCollection(self, jobId, kvdict):
         cloudType = kvdict['cloudType']

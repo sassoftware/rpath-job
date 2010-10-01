@@ -660,6 +660,7 @@ class TargetSqlBacking(SQLBacking):
                 index = kvlist.index(((jobId, 'system'), system_id))
                 kvlist.pop(index)
             if system_id:
+                from mint.lib import uuid
                 eventUuid = str(uuid.uuid4())
                 cu = self._db.cursor()
                 cu.execute("INSERT INTO inventory_system_job "

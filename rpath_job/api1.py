@@ -7,6 +7,7 @@ import os
 import sys
 import time
 
+from conary.lib import digestlib
 from rpath_storage import api1 as storage
 
 from rpath_job.models import job as jobmodels
@@ -77,6 +78,7 @@ class BaseJob(object):
         restUri = FieldString,
         restMethod = FieldString,
         restArgs = FieldString,
+        jobUuid = FieldString,
     )
     _defaultTTL = 7200
     _DEFAULT = object()
@@ -363,7 +365,8 @@ class SQLBacking(object):
     extra_fields_insert = []
 
     _fieldMap = dict(restUri = 'rest_uri', restArgs = 'rest_args',
-        errorResponse = 'error_response')
+        errorResponse = 'error_response',
+        jobUuid = 'job_uuid', )
 
     def __init__(self, db):
         self._db = db
@@ -388,9 +391,13 @@ class SQLBacking(object):
             expiration = modified + ttl
         else:
             expiration = None
+        if 'jobUuid' not in kvdict:
+            jobUuid = digestlib.sha1(file("/dev/urandom").read(16)).hexdigest()
+            kvdict['jobUuid'] = jobUuid
+        jobUuid = kvdict['jobUuid']
 
         extraCreateArgs = self._extraCreateArgs(kvdict)
-        args = (jobTypeId, jobStateId, self._db.auth.userId, created,
+        args = (jobUuid, jobTypeId, jobStateId, self._db.auth.userId, created,
             modified, expiration, ttl) + extraCreateArgs
         assert len(self.extra_fields_insert) == len(extraCreateArgs)
         if self.extra_fields_insert:
@@ -402,9 +409,9 @@ class SQLBacking(object):
             extra_bind_args = ""
         sql = """
             INSERT INTO jobs
-                (job_type_id, job_state_id, created_by, created,
+                (job_uuid, job_type_id, job_state_id, created_by, created,
                 modified, expiration, ttl%(extra_fields)s)
-            VALUES (?, ?, ?, ?, ?, ?, ?%(extra_bind_args)s)""" % dict(
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?%(extra_bind_args)s)""" % dict(
                 extra_fields = extra_fields,
                 extra_bind_args = extra_bind_args)
         cu.execute(sql, *args)
@@ -527,6 +534,7 @@ class SQLBacking(object):
         sql = """
             SELECT jobs.job_id AS id,
                    jobs.job_id AS jobId,
+                   jobs.job_uuid AS jobUuid,
                    jobs.created,
                    jobs.modified,
                    jobs.ttl,

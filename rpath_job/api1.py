@@ -629,9 +629,10 @@ class SQLBacking(object):
 class TargetSqlBacking(SQLBacking):
     __slots__ = [ '_targetsCache' ]
 
-    extra_fields = ", Targets.targetType AS cloudType, Targets.targetName AS cloudName, job_system.system_id AS system"
+    extra_fields = ", target_types.name AS cloudType, Targets.name AS cloudName, job_system.system_id AS system"
     extra_joins = """JOIN job_target ON (jobs.job_id = job_target.job_id)
               JOIN Targets ON (job_target.targetId = Targets.targetId)
+              JOIN target_types ON (Targets.target_type_id = target_types.target_type_id)
               LEFT OUTER JOIN job_system ON (job_system.job_id = jobs.job_id)"""
     extra_fields_insert = []
 
@@ -652,8 +653,9 @@ class TargetSqlBacking(SQLBacking):
         if self._targetsCache is None:
             cu = self._db.cursor()
             cu.execute("""
-                SELECT targetType, targetName, targetId
-                  FROM Targets""")
+                SELECT tt.name, t.name, t.targetId
+                  FROM Targets AS t
+                  JOIN target_types AS tt USING (target_type_id)""")
             self._targetsCache = dict(((x[0], x[1]), x[2])
                 for x in cu)
         return self._targetsCache
@@ -682,6 +684,7 @@ class ManagedSystemsSqlBacking(TargetSqlBacking):
               JOIN inventory_system_target
                     ON (job_managed_system.managed_system_id = inventory_system_target.managed_system_id)
               JOIN Targets ON (inventory_system_target.target_id = Targets.targetId)
+              JOIN target_types ON (Targets.target_type_id = target_types.target_type_id)
               LEFT OUTER JOIN job_system ON (job_system.job_id = jobs.job_id)"""
 
     def _postNewCollection(self, jobId, kvdict):

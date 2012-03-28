@@ -555,7 +555,7 @@ class SQLBacking(object):
               LEFT JOIN rest_methods ON
                     (jobs.rest_method_id = rest_methods.rest_method_id)
               %(extra_joins)s
-              WHERE jobs.expiration IS NULL OR jobs.expiration >= ?
+              WHERE (jobs.expiration IS NULL OR jobs.expiration >= ?)
               %(where_clause)s""" % dict(
                 extra_fields = self.extra_fields,
                 extra_joins = self.extra_joins,
